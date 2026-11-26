@@ -1099,7 +1099,7 @@ interface IAvnGlSurfaceRenderingSession : IUnknown
 [uuid(da291767-4db3-4598-893d-09ecaa23893f)]
 interface IAvnMetalDisplay : IUnknown
 {
-    HRESULT CreateDevice(IAvnMetalDevice** ret);
+    HRESULT CreateDevice(bool preferDiscreteGpu, IAvnMetalDevice** ret);
 }
 
 [uuid(969fa914-b74a-4c9f-8725-5160dc63579e)]

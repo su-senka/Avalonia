@@ -14,14 +14,17 @@ class MetalPlatformGraphics : IPlatformGraphics
 {
     private readonly IAvaloniaNativeFactory _factory;
     private readonly IAvnMetalDisplay _display;
+    private readonly MetalOptions _options;
 
     public MetalPlatformGraphics(IAvaloniaNativeFactory factory)
     {
         _factory = factory;
         _display = factory.ObtainMetalDisplay();
+        _options = AvaloniaLocator.Current.GetService<MetalOptions>() ?? new MetalOptions();
     }
     public bool UsesSharedContext => false;
-    public IPlatformGraphicsContext CreateContext() => new MetalDevice(_factory, _display.CreateDevice());
+    public IPlatformGraphicsContext CreateContext() =>
+        new MetalDevice(_factory, _display.CreateDevice(_options.PreferDiscreteGpu.AsComBool()));
 
     public IPlatformGraphicsContext GetSharedContext() => throw new NotSupportedException();
 }

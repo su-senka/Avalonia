@@ -305,12 +305,25 @@ public:
 @end
 
 
+// The system default device is the discrete GPU on Macs that have one, and using it keeps that GPU
+// powered on. The integrated GPU is the built-in low power one.
+static id<MTLDevice> CreateIntegratedDevice()
+{
+    for (id<MTLDevice> device in MTLCopyAllDevices())
+    {
+        if (device.isLowPower && !device.isRemovable)
+            return device;
+    }
+
+    return MTLCreateSystemDefaultDevice();
+}
+
 class AvnMetalDisplay : public ComSingleObject<IAvnMetalDisplay, &IID_IAvnMetalDisplay>
 {
 public:
     FORWARD_IUNKNOWN()
-    HRESULT CreateDevice(ComPtr<IAvnMetalDevice>& ret) override {
-        auto device = MTLCreateSystemDefaultDevice();
+    HRESULT CreateDevice(bool preferDiscreteGpu, ComPtr<IAvnMetalDevice>& ret) override {
+        auto device = preferDiscreteGpu ? MTLCreateSystemDefaultDevice() : CreateIntegratedDevice();
         if(device == nil) {
             ret = nullptr;
             return E_FAIL;
